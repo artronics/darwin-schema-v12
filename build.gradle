@@ -11,6 +11,82 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    jaxb
+}
+
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    jaxb (
+            'com.sun.xml.bind:jaxb-xjc:2.2.7',
+            'com.sun.xml.bind:jaxb-impl:2.2.7'
+    )
+    compile 'javax.xml.bind:jaxb-api:2.3.0'
+    compile 'com.sun.activation:javax.activation:1.2.0'
 }
+
+sourceSets.main.java.srcDirs "src/main/java"
+
+task jaxb {
+    System.setProperty('javax.xml.accessExternalSchema', 'all')
+    def jaxbTargetDir = file("src/main/java")
+
+    doLast {
+        jaxbTargetDir.mkdirs()
+
+        ant.taskdef(
+                name: 'xjc',
+                classname: 'com.sun.tools.xjc.XJCTask',
+                classpath: configurations.jaxb.asPath
+        )
+        ant.jaxbTargetDir = jaxbTargetDir
+
+        ant.xjc(
+                destdir: '${jaxbTargetDir}',
+                package: 'com.artronics.rail.darwin.pport.v12',
+                schema: 'src/main/resources/schema/v12/RttiPPTCommonTypes_v1.xsd'
+        )
+        ant.xjc(
+                destdir: '${jaxbTargetDir}',
+                package: 'com.artronics.rail.darwin.pport.v12',
+                schema: 'src/main/resources/schema/v12/RttiPPTSchedules_v1.xsd'
+        )
+        ant.xjc(
+                destdir: '${jaxbTargetDir}',
+                package: 'com.artronics.rail.darwin.pport.v12',
+                schema: 'src/main/resources/schema/v12/RttiPPTForecasts_v2.xsd'
+        )
+        ant.xjc(
+                destdir: '${jaxbTargetDir}',
+                package: 'com.artronics.rail.darwin.pport.v12',
+                schema: 'src/main/resources/schema/v12/RttiPPTStationMessages_v1.xsd'
+        )
+        ant.xjc(
+                destdir: '${jaxbTargetDir}',
+                package: 'com.artronics.rail.darwin.pport.v12',
+                schema: 'src/main/resources/schema/v12/RttiPPTStatus_v1.xsd'
+        )
+        ant.xjc(
+                destdir: '${jaxbTargetDir}',
+                package: 'com.artronics.rail.darwin.pport.v12',
+                schema: 'src/main/resources/schema/v12/RttiPPTTDData_v1.xsd'
+        )
+        ant.xjc(
+                destdir: '${jaxbTargetDir}',
+                package: 'com.artronics.rail.darwin.pport.v12',
+                schema: 'src/main/resources/schema/v12/RttiPPTSchema_v12.xsd'
+        )
+        ant.xjc(
+                destdir: '${jaxbTargetDir}',
+                package: 'com.artronics.rail.darwin.pport.v12',
+                schema: 'src/main/resources/schema/v12/RttiCTTReferenceSchema_v3.xsd'
+        )
+        ant.xjc(
+                destdir: '${jaxbTargetDir}',
+                package: 'com.artronics.rail.darwin.pport.v12',
+                schema: 'src/main/resources/schema/v12/RttiCTTSchema_v8.xsd'
+        )
+    }
+}
+
+compileJava.dependsOn jaxb
